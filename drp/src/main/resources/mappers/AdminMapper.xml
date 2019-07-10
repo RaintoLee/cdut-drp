@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.drp.dao.AdminDAO">
+
+
+	<resultMap id="userRoleContentMap" type="com.drp.models.UserRoleVO">
+        <id column="usr2role_id" property="usr2role_id" />
+        <result column="usr_id" property="usr_id" />
+        <result column="role_id" property="role_id" />
+        <result column="create_date" property="create_date" />
+        <result column="update_date" property="update_date" />
+        <result column="data_isvalid_flg" property="data_isvalid_flg" />
+    </resultMap>
+    
+    <resultMap id="worksUserMap" type="com.drp.models.WorksUserVO">
+        <id column="works_id" property="works_id" />
+        <result column="usr_id" property="usr_id" />
+        <result column="works_name" property="works_name" />
+        <result column="works_spec" property="works_spec" />
+        <result column="works_format" property="works_format" />
+        <result column="works_cate" property="works_cate" />
+        <result column="works_memo" property="works_memo" />
+        <result column="works_ischrg" property="works_ischrg" />
+        <result column="works_hdgt" property="works_hdgt" />
+        <result column="works_rgst_dt" property="works_rgst_dt" />
+        <result column="works_rgst_tm" property="works_rgst_tm" />
+        <result column="works_issu_dt" property="works_issu_dt" />
+        <result column="works_issu_tm" property="works_issu_tm" />
+        <result column="works_pageviews" property="works_pageviews" />
+        <result column="works_src" property="works_src" />
+        <result column="works_store_src" property="works_store_src" />
+        <result column="works_recinfo_src" property="works_recinfo_src" />
+        <result column="works_theme" property="works_theme" />
+        <result column="works_sym_key" property="works_sym_key" />
+        <result column="works_secr_lvl" property="works_secr_lvl" />
+        <result column="works_agent_qty" property="works_agent_qty" />
+        <result column="works_auth_qty" property="works_auth_qty" />
+        <result column="works_isvalid_flg" property="works_isvalid_flg" />
+        <association property="userVO" select="getUserNameByUsrId" column="usr_id" />
+    </resultMap>
+
+    <!-- 读取角色申请列表 -->
+    <select id="getCharManageList" parameterType="com.drp.models.UserRolePageVO" resultMap="userRoleContentMap">
+        SELECT * FROM t_usr_role_info 
+        WHERE data_isvalid_flg = 0
+        LIMIT #{userRolePageVO.pageVO.index},#{userRolePageVO.pageVO.pageSize}
+    </select>
+
+	<!-- 根据usr2roleId更改权限 -->
+	<update id="changeDataIsvalidFlg" parameterType="com.drp.models.UserRoleVO">
+		UPDATE
+		t_usr_role_info
+		SET
+		data_isvalid_flg = #{userRoleVO.data_isvalid_flg}
+		WHERE
+		usr2role_id = #{userRoleVO.usr2role_id}
+	</update>
+	
+	<!-- 读取作品审核列表 -->
+	<select id="getWorksManageList" parameterType="com.drp.models.WorksPageVO" resultMap="worksUserMap">
+        SELECT * FROM t_da_works WHERE works_isvalid_flg = 0 LIMIT #{worksPageVO.pageVO.index},#{worksPageVO.pageVO.pageSize}
+    </select>
+    
+    <!-- (内部被映射，不用写DAO) -->
+	<select id="getUserNameByUsrId" parameterType="String" resultType="com.drp.models.UserVO">
+		SELECT usr_nm FROM t_usr_info WHERE usr_id = #{usr_id}
+	</select>
+	
+	<!-- 根据worksID更改权限 -->
+	<update id="changeWorksIsvalidFlg" parameterType="com.drp.models.WorksVO">
+		UPDATE
+		t_da_works
+		SET
+		works_isvalid_flg = #{worksVO.works_isvalid_flg}
+		WHERE
+		works_id = #{worksVO.works_id}
+	</update>
+</mapper>

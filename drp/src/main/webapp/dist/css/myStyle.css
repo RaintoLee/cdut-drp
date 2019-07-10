@@ -1,0 +1,11 @@
+.t_right{
+	text-align: -moz-right;
+	text-align: -webkit-right;
+	text-align: right;
+}
+body{
+	overflow-y: auto;;
+}
+.content-wrapper{
+height: 850px
+}

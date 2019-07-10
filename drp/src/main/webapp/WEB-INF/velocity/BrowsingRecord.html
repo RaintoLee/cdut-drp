@@ -1,0 +1,79 @@
+#parse("./header.html")
+#parse("./leftmenu.html")
+<!-- 添加的css样式 -->
+<link rel="stylesheet" href="/drp/dist/css/index.css">
+<!--<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="span12">
+			 <span class="label">登录记录</span>
+			<div class="btn-group">
+				 <button class="btn" type="button"><em class="icon-align-left"></em></button> 
+				 <button class="btn" type="button"><em class="icon-align-center"></em></button> 
+				 <button class="btn" type="button"><em class="icon-align-right"></em></button> 
+				 <button class="btn" type="button"><em class="icon-align-justify"></em></button>
+			</div>
+			<table class="table" >
+				<thead>
+					<tr>
+						<th>用户ID</th>
+						<th>登陆地点</th>
+						<th>登录时间</th>
+					</tr>
+				</thead>
+				<tbody id="tbody">
+				</tbody>
+			</table>
+			<div class="pagination pagination-centered" id="navigation">
+				<ul>
+					<li><a href="#firstpage" onclick="firstpage()">首页</a></li>
+					<li><a href="#lastpage" onclick="lastpage()">上一页</a></li>
+					<li><a href="#nextpage" onclick="nextpage()">下一页</a></li>
+					<li><a href="#endpage" onclick="endpage()">末页</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div> -->
+<!-- 内容 -->
+<div class="content-wrapper">
+	<div class="container">
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span12">
+					 <span class="label">登录记录</span>
+					<div class="btn-group">
+						 <button class="btn" type="button"><em class="icon-align-left"></em></button> 
+						 <button class="btn" type="button"><em class="icon-align-center"></em></button> 
+						 <button class="btn" type="button"><em class="icon-align-right"></em></button> 
+						 <button class="btn" type="button"><em class="icon-align-justify"></em></button>
+					</div>
+					<table class="table" >
+						<thead>
+							<tr>
+								<th>用户ID</th>
+								<th>作品名称</th>
+								<th>浏览时间</th>
+							</tr>
+						</thead>
+						<tbody id="tbody">
+						</tbody>
+					</table>
+					<div class="pagination pagination-centered" id="navigation">
+						<ul>
+							<a href="#" onclick='firstpage()'>首页</a>
+							<a href="#" onclick='lastpage()'>上一页</a>
+							<a href="#" onclick='nextpage()'>下一页</a>
+							<a href="#" onclick='endpages()'>末页</a>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+<script src="/drp/js/BrowsingRecord.js"></script> 
+#parse("./footer.html")
+
+
+

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.drp.dao.BrowsingDAO">
+
+	<!-- 作品和人员的封装类map -->
+	<resultMap id="worksUserMap" type="com.drp.models.WorksUserVO">
+        <id column="works_id" property="works_id" />
+        <result column="works_name" property="works_name" />
+        <result column="works_spec" property="works_spec" />
+        <result column="works_cate" property="works_cate" />
+        <result column="works_ischrg" property="works_ischrg" />
+        <result column="works_hdgt" property="works_hdgt" />
+        <result column="works_pageviews" property="works_pageviews" />
+        <result column="works_theme" property="works_theme" />
+        <association property="userVO" javaType="com.drp.models.UserVO">
+        	<id property="usr_id" column="usr_id" />
+        	<result property="usr_nm" column="usr_nm" />
+        </association>
+    </resultMap>
+    
+    <!-- (内部被映射，不用写DAO) -->
+    <select id="getWorksUserInfoByWorksId" parameterType="String" resultMap="worksUserMap">
+    	SELECT usr.*,works.* FROM t_usr_info usr LEFT JOIN t_da_works works ON usr.usr_id = works.usr_id
+    	WHERE works.works_id = #{works_id}
+    </select>
+    
+    <!-- 浏览记录封装类的map -->
+   	<resultMap type="com.drp.models.BrowsingRecordVO" id="browsingRecordMap">
+    	<id column="browse_id" property="browse_id"/> 
+    	<result column="browsing_time" property="browsing_time"/>
+    	<result column="usr_id" property="usr_id"/>
+    	<association property="worksUserVO" select="getWorksUserInfoByWorksId" column="works_id"></association>
+    </resultMap>
+    
+    <select id="getBrowsingRecordByUsrId" parameterType="com.drp.models.BrowsingRecordPageVO" resultMap="browsingRecordMap">
+        SELECT browse_id, usr_id, works_id, browsing_time FROM t_browse_record WHERE usr_id = #{browsingRecordPageVO.usr_id} LIMIT #{browsingRecordPageVO.pageVO.index},#{browsingRecordPageVO.pageVO.pageSize}
+    </select>
+
+    <insert id="insertOneBrowsingRecord" parameterType="com.drp.models.BrowsingRecordVO">
+    	INSERT INTO
+		t_browse_record (browse_id, usr_id, works_id, browsing_time)
+		VALUES (#{browsingRecordVO.browse_id}, #{browsingRecordVO.usr_id}, 
+		#{browsingRecordVO.works_id}, #{browsingRecordVO.browsing_time})
+    </insert>
+    
+    <select id="getPublicKey" parameterType="com.drp.models.PageVO" resultType="com.drp.models.UserVO">
+        SELECT usr_nm ,usr_id,usr_pub_key  FROM t_usr_info  LIMIT #{index},#{pageSize}
+    </select>
+    <update id="addPageviews" parameterType="String">
+    	update t_da_works
+    	set
+    		works_pageviews=works_pageviews+1
+    	where
+    		works_id=#{works_id}
+    </update>
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.drp.dao.DownloadDAO">
+
+    <!-- 作品和人员的封装类map -->
+    <resultMap id="worksUserMap" type="com.drp.models.WorksUserVO">
+        <id column="works_id" property="works_id" />
+        <result column="works_name" property="works_name" />
+        <result column="works_spec" property="works_spec" />
+        <result column="works_cate" property="works_cate" />
+        <result column="works_ischrg" property="works_ischrg" />
+        <result column="works_hdgt" property="works_hdgt" />
+        <result column="works_pageviews" property="works_pageviews" />
+        <result column="works_theme" property="works_theme" />
+        <association property="userVO" javaType="com.drp.models.UserVO">
+        	<id property="usr_id" column="usr_id" />
+        	<result property="usr_nm" column="usr_nm" />
+        </association>
+    </resultMap>
+    
+    <!-- (内部被映射，不用写DAO) -->
+    <select id="getWorksUserInfoByWorksId" parameterType="String" resultMap="worksUserMap">
+    	SELECT usr.*,works.* FROM t_usr_info usr LEFT JOIN t_da_works works ON usr.usr_id = works.usr_id
+    	WHERE works.works_id = #{works_id}
+    </select>
+     
+    <!-- 下载记录封装类的map -->
+   	<resultMap type="com.drp.models.DownloadRecordVO" id="downloadRecordMap">
+    	<id column="record_id" property="record_id"/> 
+    	<result column="download_time" property="download_time"/>
+    	<result column="usr_id" property="usr_id"/>
+    	<association property="worksUserVO" select="getWorksUserInfoByWorksId" column="works_id"></association>
+    </resultMap>
+    
+    <select id="getDownloadRecordByUsrId" parameterType="com.drp.models.DownloadRecordPageVO" resultMap="downloadRecordMap">
+        SELECT record_id, usr_id, works_id, download_time FROM t_download_record WHERE usr_id = #{downloadRecordPageVO.usr_id} LIMIT #{downloadRecordPageVO.pageVO.index},#{downloadRecordPageVO.pageVO.pageSize}
+    </select>
+
+    <insert id="insertOneDownloadRecord" parameterType="com.drp.models.DownloadRecordVO">
+    	INSERT INTO
+		t_download_record (record_id, usr_id, works_id, download_time)
+		VALUES (#{downloadRecordVO.record_id}, #{downloadRecordVO.usr_id}, 
+		#{downloadRecordVO.works_id}, #{downloadRecordVO.download_time})
+    </insert>
+</mapper>

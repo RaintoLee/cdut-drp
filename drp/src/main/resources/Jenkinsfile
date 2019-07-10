@@ -1,0 +1,45 @@
+node {
+    stage 'Check out'
+      git  url: "http://192.168.3.166/drp/drp.git", credentialsId: "cdu-gitlab"
+
+    stage 'Build war and sonarqube'
+            parallel(
+              a: {
+                  docker.image('registry.cn-shenzhen.aliyuncs.com/nox60/maven-public:3.5.3').inside('-v /opt/local/maven/m2:/root/.m2 -v /etc/hosts:/etc/hosts') {
+                          sh 'mvn clean install'
+                  }
+              }
+
+              /*,
+              b: {
+                  docker.image('registry.cn-shenzhen.aliyuncs.com/nox60/maven-public:3.5.3').inside('-v /opt/local/maven/m2:/root/.m2 -v /etc/hosts:/etc/hosts') {
+                          sh 'mvn sonar:sonar  -Dsonar.host.url=http://192.168.3.166:9000 -Dsonar.login=7dfcecb9f5d8b12263dc9ff75a1d00d3b63b19dc'
+                 }
+              }*/
+            )
+
+    stage 'Build docker image'
+        sh 'cp src/main/resources/Dockerfile Dockerfile'
+        sh 'cp target/*.war .'
+        def dockerImageCore = docker.build("registry.cn-shenzhen.aliyuncs.com/nox60/drp")
+
+    stage 'Push docker image to registry'
+        docker.withRegistry("http://registry.cn-shenzhen.aliyuncs.com","aliyun-credential") {
+            dockerImageCore.push(version())
+        }
+
+    stage 'Redeploy docker container then restart'
+        try{
+          sh 'docker rm -f drp-container'
+        }catch(e){
+            // err message
+        }
+
+        docker.image('registry.cn-shenzhen.aliyuncs.com/nox60/drp:'+version()).run('-d -p 18080:8080 --link mysql56:dbserver -e "DRP_DB_SERVER=dbserver:3306" -e "DRP_DB_USERNAME=root" -e "DRP_DB_PASSWORD=admin1234.COM" -e "DRP_FASTDFS_TRACKER=192.168.3.166:22122" -e "JAVA_OPTS=-server -Xms256m -Xmx512m -Xmn192m -Xss256k -Djava.security.egd=file:/dev/./urandom" --name drp-container')
+
+}
+
+def version() {
+  def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+  matcher ? matcher[0][1] : null
+}

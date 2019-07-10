@@ -1,0 +1,83 @@
+#parse("./header.html") #parse("./leftmenu.html")
+
+<div class="content-wrapper" style="color: #666; background: url(/drp/dist/img/bg02.jpg); background-size: 100%;">
+	<!--header-->
+	<section class="content-header">
+		<h1>作者主页</h1>
+		<ol class="breadcrumb">
+			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+			<li><a href="#">Tables</a></li>
+			<li class="active">Data tables</li>
+		</ol>
+	</section>
+
+
+	<!-- Main content -->
+	<section class="content">
+					<div class="row">	
+						<div class="col-sm-12 col-xs-12" id="header">
+							<div class="box box-solid">
+								<div class="box-body" id="user">
+									<script id="test1" type="text/html">
+									{{ each users_detail}}
+									<div class="u-ui-img">
+										    <img src="dist/img/avatar.png" alt="用户头像" class="img-circle user-head-img" style="width: 96px;height: 96px;float: left;margin-top: 30px;">										
+									</div>
+										<h1 style="font-weight: bold;margin-top: 25px">{{ $value.usr_nicknm}}</h1>
+		                                <p style="margin-top: 15px">{{ $value.usr_nm}}  |  个人等级 - {{ $value.usr_qlfy}}</p>   
+		                                <p><span class="glyphicon glyphicon-earphone" style="margin-top: 0px"></span>&nbsp;&nbsp;&nbsp;联系电话:{{$value.usr_phone}}</p>   
+									{{ /each }}
+									</script>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-sm-12 col-xs-12">
+							<div class="box box-solid">
+								<div class="box-body">
+									<h3 class="myworks">我的作品</h3>
+									<div class="box-body_body" id="temp">
+										<script id="test" type="text/html">
+											{{ each works_detail}}
+											<h4 style="background-color: #f7f7f7; font-size: 18px; padding: 7px 10px; margin-top:0">{{ $value.works_name }}</h4>
+											<div class="media-body">
+												<div class="clearfix">
+													<p class="pull-right">
+														
+														<a href="http://114.115.168.82:8080/drp/recommendWorksDetails?works_id={{ $value.works_id }}" class="btn btn-default btn-sm ad-click-event btn-primary" style="color: #FFFFFF;">
+															查看详情
+														</a>
+													</p>
+		
+													<h5 style="margin-top: 0">
+														关键字：{{ $value.keywords}}
+														
+														</h5>
+		
+													<p >摘要：{{ $value.works_memo }}</p>
+													<p style="margin-bottom: 0;">
+														<div style="display: inline; padding-right: 10px; color: #999;">
+															发行：{{ $value.works_rgst_dt }}
+														</div>
+														 <div style="display: inline; padding-right: 10px; color: #999;">
+														 	浏览量：{{ $value.works_pageviews }}
+														 </div>
+													</p>
+												</div>
+											</div>
+										    {{ /each }}
+									    </script>
+								    </div>
+								</div>
+							</div>
+						</div>
+					</div>
+			    </section>
+			</div>
+			<!-- Main content -->
+			
+#parse("./footer.html")
+
+<script src="/drp/js/authortheme.js"></script> 
+<script src="/drp/js/FileSaver.min.js"></script>
+<script src="/drp/dist/lib/art-template-master/lib/template-web.js" type="text/javascript" charset="utf-8"></script>

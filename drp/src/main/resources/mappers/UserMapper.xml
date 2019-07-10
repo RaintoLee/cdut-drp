@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.drp.dao.UserDAO">
+
+	<select id="getUserByUserName" parameterType="String" resultType="com.drp.models.UserVO">
+		SELECT * FROM t_usr_info WHERE usr_nm = #{userName} LIMIT 0,1
+	</select>
+	<!-- 查询邮箱是否存在 -->
+	<select id="getCountByUserEmail" parameterType="Integer" resultType="java.lang.Integer">
+		SELECT COUNT(usr_id) FROM t_usr_info WHERE usr_email = #{newEmail} 
+	</select>
+
+	<insert id="insertOneUser" parameterType="com.drp.models.UserVO">
+		INSERT INTO
+		t_usr_info (usr_id, usr_gender, usr_nm, usr_pwd, usr_phone, usr_email, 
+		usr_nicknm, usr_cert_num, usr_qlfy, usr_cert_cate, usr_addr,usr_pub_key)
+		VALUES (#{userVO.usr_id}, #{userVO.usr_gender},#{userVO.usr_nm}, #{userVO.usr_pwd},
+		#{userVO.usr_phone}, #{userVO.usr_email},#{userVO.usr_nicknm},
+		#{userVO.usr_cert_num},#{userVO.usr_qlfy},#{userVO.usr_cert_cate},
+		#{userVO.usr_addr},#{userVO.usr_pub_key})
+	</insert>
+	
+	<update id="updateVoByPrimaryKey">
+		UPDATE
+		tb_users
+		SET
+		userName = #{userVO.userName},
+		password = #{userVO.password}
+		WHERE
+		accountId = #{userVO.accountId}
+	</update>
+	
+	<resultMap id="UserVO" type="com.drp.models.UserVO">
+        <id column="usr_id" property="usr_id" />
+        <result column="usr_nm" property="usr_nm" />
+        <result column="usr_pwd" property="usr_pwd" />
+        <result column="usr_gender" property="usr_gender" />
+        <result column="usr_phone" property="usr_phone" />
+        <result column="usr_email" property="usr_email" />
+        <result column="usr_nicknm" property="usr_nicknm" />
+        <result column="usr_cert_num" property="usr_cert_num" />
+        <result column="usr_qlfy" property="usr_qlfy" />
+        <result column="usr_cert_cate" property="usr_cert_cate" />
+        <result column="usr_addr" property="usr_addr" />
+        <result column="usr_pub_key" property="usr_pub_key" />
+    </resultMap>
+    
+    <select id="getUserBasicInfoByUsrId" parameterType="String" resultMap="UserVO">
+        SELECT * FROM t_usr_info WHERE usr_id = #{usr_id}
+    </select>
+    
+     <update id="updateEmailByUsrId" parameterType="com.drp.models.UserVO" >
+		UPDATE
+		t_usr_info
+		SET
+		usr_email = #{userVO.usr_email}
+		WHERE
+		usr_id = #{userVO.usr_id}
+	</update>
+	
+	<update id="updatePwdByUsrId" parameterType="com.drp.models.UserVO" >
+		UPDATE
+		t_usr_info
+		SET
+		usr_pwd = #{userVO.usr_pwd}
+		WHERE
+		usr_id = #{userVO.usr_id}
+	</update>
+    
+    <update id="updateUserInfoByUsrId" parameterType="com.drp.models.UserVO" >
+		UPDATE
+		t_usr_info
+		SET
+		usr_nicknm = #{userVO.usr_nicknm},
+		usr_cert_cate = #{userVO.usr_cert_cate},
+		usr_cert_num = #{userVO.usr_cert_num},
+		usr_phone = #{userVO.usr_phone}, 
+		usr_gender = #{userVO.usr_gender}, 
+		usr_addr = #{userVO.usr_addr}, 
+		usr_qlfy = #{userVO.usr_qlfy}
+		WHERE
+		usr_id = #{userVO.usr_id}
+	</update>
+	
+	<insert id="insertOneUsrRoleInfo" parameterType="com.drp.models.UserRoleVO">
+		INSERT INTO t_usr_role_info 
+		(usr2role_id, usr_id, role_id, create_date, update_date, data_isvalid_flg) 
+		VALUES (#{userRoleVO.usr2role_id}, #{userRoleVO.usr_id}, #{userRoleVO.role_id}, #{userRoleVO.create_date},
+		#{userRoleVO.update_date}, #{userRoleVO.data_isvalid_flg})
+	</insert>
+	
+	<select id="getRoleByUsrIdAndRoleId" parameterType="com.drp.models.UserRoleVO" resultType="com.drp.models.UserRoleVO">
+		SELECT * FROM t_usr_role_info WHERE usr_id = #{userRoleVO.usr_id} AND role_id = #{userRoleVO.role_id}
+	</select>
+	
+	<!-- 角色id对应的role_id -->
+	<select id="getRoleIdByUsrId" parameterType="String" resultType="String">
+		SELECT role_id FROM t_usr_role_info WHERE usr_id = #{usrId} AND data_isvalid_flg = 1
+	</select>
+	
+	<!-- 角色id对应的资源 -->
+	<resultMap type="com.drp.models.RoleSrcVO" id="RoleSrcMap">
+		<id property="role2src_id" column="role2src_id" />
+		<result property="role_id" column="role_id" />
+		<result property="src_id" column="src_id" />
+		<result property="update_date" column="update_date" />
+		<result property="create_date" column="create_date" />
+		<result property="data_isvalid_flg" column="data_isvalid_flg" />
+		<association property="srcVO" javaType="com.drp.models.SrcVO">
+        	<id property="src_id" column="src_id" />
+        	<result property="src_name" column="src_name" />
+        	<result property="src_url" column="src_url" />
+        	<result property="src_menu_flag" column="src_menu_flag" />
+        </association>
+	</resultMap>
+	
+	<select id="getRoleSrcInfoByRoleId" parameterType="String" resultMap="RoleSrcMap">
+		SELECT r.*,s.* FROM t_role_src_info r LEFT JOIN t_src_info s on r.src_id = s.src_id WHERE role_id = #{roleId} 
+	</select>
+	<select id="getAgentList" resultType="String">
+		SELECT usr_id FROM t_usr_role_info WHERE role_id = 3
+	
+	</select>
+	<select id="getUserNameByUsrId" parameterType="String" resultType="String">
+		SELECT usr_nm FROM t_usr_info WHERE usr_id=#{usr_id}
+	</select>
+</mapper>

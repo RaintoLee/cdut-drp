@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.drp.dao.ProtocolDAO">
+
+	<insert id="insertProtocolContent" parameterType="com.drp.models.ProtocolVO">
+		INSERT INTO
+		t_da_protocol (agmt_id, usr_id, parta_id, partb_id, works_id, protocol_deadline, auth_fee, parta_patio, partb_patio, protocol_type, role_id,deskey)
+		VALUES (#{protocolVO.agmt_id}, #{protocolVO.usr_id}, #{protocolVO.parta_id}, #{protocolVO.partb_id},
+		#{protocolVO.works_id}, #{protocolVO.protocol_deadline}, #{protocolVO.auth_fee},
+		#{protocolVO.parta_patio}, #{protocolVO.partb_patio}, #{protocolVO.protocol_type} , #{protocolVO.role_id},#{protocolVO.deskey})
+	</insert>
+
+	<resultMap id="protocolContentMap" type="com.drp.models.ProtocolVO">
+        <id column="agmt_id" property="agmt_id" />
+        <result column="usr_id" property="usr_id" />
+        <result column="parta_id" property="parta_id" />
+        <result column="partb_id" property="partb_id" />
+        <result column="works_id" property="works_id" />
+        <result column="protocol_deadline" property="protocol_deadline" />
+        <result column="agent_num" property="agent_num" />
+        <result column="auth_fee" property="auth_fee" />
+        <result column="parta_patio" property="parta_patio" />
+        <result column="partb_patio" property="partb_patio" />
+        <result column="info_isvalid_flg" property="info_isvalid_flg" />
+        <result column="role_id" property="role_id" />
+        <result column="deskey" property="deskey" />
+    </resultMap>
+
+	<!-- 根据agmt_id查找协议状态值 -->
+	<select id="getProtocolDetailsByAgmtId" parameterType="String" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol WHERE agmt_id = #{agmt_id}
+    </select>
+
+	<update id="updateInfoisValidFlg" parameterType="com.drp.models.ProtocolVO">
+		UPDATE
+		t_da_protocol
+		SET
+		info_isvalid_flg = #{protocolVO.info_isvalid_flg}
+		WHERE
+		agmt_id = #{protocolVO.agmt_id}
+	</update>
+	
+	<!-- 根据agmt_id查找协议状态值并且加一 -->
+ 	<select id="getInfoIsvalidFlg" parameterType="String"  resultType="String">
+        SELECT info_isvalid_flg FROM t_da_protocol WHERE agmt_id = #{agmt_id}
+    </select>
+ 	<update id="updateInfoIsvalidFlg" parameterType="String">
+	  UPDATE
+	  t_da_protocol
+	  SET
+	  info_isvalid_flg = #{isval}
+	  WHERE
+	  agmt_id = #{agmt_id}
+	 </update>
+	
+	
+	<!-- 根据works_id查找代理商申请的代理 -->
+	
+	
+		<!-- 	<select id="getProtocolDetailByWorksId" parameterType="com.drp.models.ProtocolPageVO" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol 
+        WHERE works_id = #{protocolPageVO.works_id} AND usr_id != #{protocolPageVO.parta_id} 
+        LIMIT #{protocolPageVO.pageVO.index},#{protocolPageVO.pageVO.pageSize}
+    </select> -->
+  
+    
+    
+    	<!-- 根据works_id查找代理商申请的代理 -->
+  	<select id="getProtocolDetailByWorksId" parameterType="com.drp.models.ProtocolPageVO" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol 
+        WHERE works_id = #{protocolPageVO.works_id}
+        LIMIT #{protocolPageVO.pageVO.index},#{protocolPageVO.pageVO.pageSize}
+    </select>
+    
+    
+   
+    
+    <!-- 授权协议表 -->
+	<insert id="insertImpowerProtocolContent" parameterType="com.drp.models.ProtocolVO">
+		INSERT INTO
+		t_da_protocol (agmt_id, usr_id, parta_id, partb_id, works_id, protocol_deadline, auth_fee, protocol_type, role_id)
+		VALUES (#{protocolVO.agmt_id}, #{protocolVO.usr_id}, #{protocolVO.parta_id}, #{protocolVO.partb_id},
+		#{protocolVO.works_id}, #{protocolVO.protocol_deadline}, #{protocolVO.auth_fee},
+		#{protocolVO.protocol_type},#{protocolVO.role_id})
+	</insert>
+	
+	<!-- 根据usr_id获取协议表值 -->
+   <select id="getMyAgentList" parameterType="com.drp.models.ProtocolPageVO" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol 
+        WHERE usr_id = #{protocolPageVO.usr_id} AND partb_id = #{protocolPageVO.usr_id} AND protocol_type = 1
+        LIMIT #{protocolPageVO.pageVO.index},#{protocolPageVO.pageVO.pageSize}
+    </select>
+    
+    <!-- 根据usr_id获取协议表值 -->
+   <select id="getReceiveAgentListData" parameterType="com.drp.models.ProtocolPageVO" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol 
+        WHERE usr_id = #{protocolPageVO.usr_id} AND parta_id = #{protocolPageVO.usr_id} AND protocol_type = 1
+        LIMIT #{protocolPageVO.pageVO.index},#{protocolPageVO.pageVO.pageSize}
+    </select>
+    
+    <!-- 普通用户：根据usr_id获取协议表值 -->
+   <select id="getMyOrderListData" parameterType="com.drp.models.ProtocolPageVO" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol 
+        WHERE usr_id = #{protocolPageVO.usr_id} AND protocol_type = 2
+        LIMIT #{protocolPageVO.pageVO.index},#{protocolPageVO.pageVO.pageSize}
+    </select>
+    
+ 
+	  
+ 	<!-- 普通用户：根据usr_id获取协议表值 -->
+  	 <select id="getWorksOrderList" parameterType="com.drp.models.ProtocolPageVO" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol 
+        WHERE works_id = #{protocolPageVO.works_id} AND protocol_type = 2 AND info_isvalid_flg != 0
+        LIMIT #{protocolPageVO.pageVO.index},#{protocolPageVO.pageVO.pageSize}
+  	  </select>
+    
+	 <!-- 作者：根据works_id获取协议表值 -->
+  	 <select id="getAgentListFromMeByWorksId" parameterType="com.drp.models.ProtocolPageVO" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol 
+        WHERE works_id = #{protocolPageVO.works_id} AND protocol_type = 1 AND usr_id = #{protocolPageVO.usr_id} AND role_id = 2
+        LIMIT #{protocolPageVO.pageVO.index},#{protocolPageVO.pageVO.pageSize}
+   	 </select>
+   	 
+   	 <!-- 作者：根据works_id获取协议表值 -->
+  	 <select id="getAgentListFromAgentByWorksId" parameterType="com.drp.models.ProtocolPageVO" resultMap="protocolContentMap">
+        SELECT * FROM t_da_protocol 
+        WHERE works_id = #{protocolPageVO.works_id} AND protocol_type = 1 AND info_isvalid_flg != 0 AND usr_id != #{protocolPageVO.usr_id} AND role_id = 3
+        LIMIT #{protocolPageVO.pageVO.index},#{protocolPageVO.pageVO.pageSize}
+   	 </select>
+   	 
+   	 
+   	    <!-- 修改购买状态为1 -->
+	 <update id="updateReceiveFlg" parameterType="String">
+	   UPDATE
+	   t_da_protocol
+	   SET
+	   receive_flg = #{receive_flg}
+	   WHERE
+	   agmt_id = #{agmt_id}
+	  </update>
+   	 
+   	 
+   	 
+   	     <!-- 修改购买状态为1 -->
+	 <update id="updateDeskey" parameterType="String">
+	   UPDATE t_da_protocol SET deskey = #{deskey} WHERE agmt_id = #{agmt_id}
+	  </update>
+   	 
+   	 
+   	 
+   	 
+</mapper>
